@@ -1,26 +1,24 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+// Routing
+// @ts-ignore
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+
+// Components
+import Home from './components/Home';
+import People from './components/People';
+import Planets from './components/Planets';
+import Movies from './components/Movies';
+
+const App: React.FC = () => (
+    <Router>
+        <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/people' element={<People />} />
+            <Route path='/planets' element={<Planets />} />
+            <Route path='/movies' element={<Movies />} />
+        </Routes>
+    </Router>
+);
 
 export default App;
