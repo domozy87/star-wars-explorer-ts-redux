@@ -20,6 +20,7 @@ const Header: React.FC<HeaderT> = (props) => {
                 color="inherit"
                 aria-label="menu"
                 sx={{ mr: 2 }}
+                href="/"
             >
                 <MenuIcon />
             </IconButton>

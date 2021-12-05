@@ -1,7 +1,13 @@
 import React from 'react';
 
+import Header from './Header';
+
 const Planets: React.FC = () => {
-    return <>Planets</>;
+    return (
+        <>
+            <Header title="Planets" />
+        </>
+    );
 };
 
 export default Planets;
