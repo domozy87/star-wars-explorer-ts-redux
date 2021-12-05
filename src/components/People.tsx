@@ -1,19 +1,49 @@
 import React from 'react';
+import styled from 'styled-components';
+
+// MUI
+import { Button } from '@mui/material';
 
 // Components
 import Header from './Header';
+import AvatarComponent from './Avatar';
+import Spinner from './Spinner';
 
-// API
-import API from '../API';
+// Hooks
+import { usePeopleFetch } from '../hooks/usePeopleFetch';
+
+// Image
+import PersonImg from '../images/profile.png';
+
+const Wrapper = styled.div`
+    padding: 10px;
+`;
 
 const People: React.FC = () => {
-    const casts = API.fetchPeople(1);
+    const { state, loading, error, setLoadingMore } = usePeopleFetch();
 
-    console.log(casts);
+    if ( error ) {
+        return (
+            <div>Something went wrong...!</div>
+        );
+    }
 
     return (
         <>
             <Header title="People" />
+            <Wrapper>
+                {state.results.map(person => (
+                    <div key={person.name}>
+                        <Button href={`/people/${state.results.indexOf(person) + 1}`} key={person.name}>
+                            <AvatarComponent name={person.name} image_url={PersonImg} />
+                        </Button>
+                    </div>
+                ))}
+                {loading && <Spinner />}
+                {state.next && !loading && (
+                    <Button onClick={() => setLoadingMore(true)}>Load More</Button>
+                )}
+            </Wrapper>
         </>
     );
 };

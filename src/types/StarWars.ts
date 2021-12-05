@@ -1,4 +1,4 @@
-export type Person = {
+export type PersonT = {
     name: string;
     height: string;
     mass: string;
@@ -8,36 +8,37 @@ export type Person = {
     birth_year: string;
 };
 
-export type People = {
+export type PeopleT = {
     page: number;
-    results: Person[];
+    results: PersonT[];
+    next: string;
     total_pages: number;
-    total_results: number;
+    count: number;
 };
 
-export type Movie = {
+export type MovieT = {
     title: string;
     director: string;
     producers: string;
     release_date: string;
 };
 
-export type Movies = {
+export type MoviesT = {
     page: number;
-    results: Movie[];
+    results: MovieT[];
     total_pages: number;
     total_results: number;
 };
 
-export type Planet = {
+export type PlanetT = {
     title: string;
     terrain: string;
     population: string;
 };
 
-export type Planets = {
+export type PlanetsT = {
     page: number;
-    results: Planet[];
+    results: PlanetT[];
     total_pages: number;
     total_results: number;
 };
