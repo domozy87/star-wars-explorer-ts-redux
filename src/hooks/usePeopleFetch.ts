@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import API from '../API';
 
 // Types
-import { PersonT } from '../types/StarWars';
+import { PersonT, PeopleT } from '../types/StarWars';
 
 const initialState = {
     page: 0,
@@ -15,10 +15,10 @@ const initialState = {
 };
 
 export const usePeopleFetch = () => {
-    const [state, setState] = useState(initialState);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
-    const [isLoadingMore, setLoadingMore] = useState(false);
+    const [state, setState] = useState<PeopleT>(initialState);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false);
+    const [isLoadingMore, setLoadingMore] = useState<boolean>(false);
 
     const fetchPeople = async (page: number) => {
         try {

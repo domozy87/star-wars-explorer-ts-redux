@@ -1,7 +1,7 @@
 import { PEOPLE_URL, PLANET_URL, MOVIE_URL } from './config';
 import * as Types from './types/StarWars';
 
-export default {
+const API = {
     fetchPeople: async (page: number): Promise<Types.PeopleT> => {
         const endpoint: string = `${PEOPLE_URL}?page=${page}`;
 
@@ -37,4 +37,6 @@ export default {
 
         return await (await fetch(endpoint)).json();
     },
-}
+};
+
+export default API;
