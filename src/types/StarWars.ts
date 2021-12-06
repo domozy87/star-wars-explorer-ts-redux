@@ -4,8 +4,10 @@ export type PersonT = {
     mass: string;
     hair_color: string;
     skin_color: string;
+    eye_color: string;
     gender: string;
     birth_year: string;
+    url: string;
 };
 
 export type PeopleT = {
@@ -19,26 +21,30 @@ export type PeopleT = {
 export type MovieT = {
     title: string;
     director: string;
-    producers: string;
+    producer: string;
     release_date: string;
+    url: string;
 };
 
 export type MoviesT = {
     page: number;
     results: MovieT[];
+    next: string;
     total_pages: number;
-    total_results: number;
+    count: number;
 };
 
 export type PlanetT = {
-    title: string;
+    name: string;
     terrain: string;
     population: string;
+    url: string;
 };
 
 export type PlanetsT = {
     page: number;
     results: PlanetT[];
+    next: string;
     total_pages: number;
-    total_results: number;
+    count: number;
 };
