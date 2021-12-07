@@ -1,5 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+
+// Store
+import { RootState } from '../../store/Store';
+
+// Reducers
+import { fetchPlanet } from '../../reducers/Planet';
 
 // MUI
 import { Typography } from '@mui/material';
@@ -10,7 +17,9 @@ import Header from '../Header';
 
 // Hooks
 import { useParams } from 'react-router-dom';
-import { usePlanetFetch } from '../../hooks/usePlanetFetch';
+
+// API
+import API from '../../API';
 
 const Wrapper = styled.div`
     display: flex;
@@ -45,7 +54,31 @@ const DashLine = styled.div`
 
 const PlanetDetail: React.FC = () => {
     const { planetId } = useParams();
-    const { state: planet, loading, error } = usePlanetFetch(Number(planetId));
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
+
+    const PlanetState = useSelector((state: RootState) => state.planet.value);
+
+    const handleFetchPlanet = useCallback(async (pid: number) => {
+        try {
+            setLoading(true);
+            setError(false);
+
+            const sw_planet = await API.fetchPlanet(pid);
+            dispatch(fetchPlanet({ ...sw_planet }));
+        }
+        catch(error) {
+            setError(true);
+        }
+
+        setLoading(false);
+    }, [dispatch]);
+
+    useEffect(() => {
+        handleFetchPlanet(Number(planetId));
+    }, [handleFetchPlanet, planetId]);
 
     if ( loading ) {
         return <Spinner />
@@ -59,15 +92,15 @@ const PlanetDetail: React.FC = () => {
         <>
             <Header title="Planets" />
             <Wrapper>
-                <Typography variant="h4" component="div" gutterBottom>{planet.name}</Typography>
+                <Typography variant="h4" component="div" gutterBottom>{PlanetState.name}</Typography>
                 <FieldWrap>
                     <StyleLabel>Terrain</StyleLabel>
-                    <StyleValue>{planet.terrain}</StyleValue>
+                    <StyleValue>{PlanetState.terrain}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Population</StyleLabel>
-                    <StyleValue>{planet.population}</StyleValue>
+                    <StyleValue>{PlanetState.population}</StyleValue>
                     <DashLine />
                 </FieldWrap>
             </Wrapper>

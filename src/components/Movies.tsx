@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { RootState } from '../store/Store';
+
+// Reducers
+import { fetchMovies } from '../reducers/Movies';
 
 // MUI
 import { Button } from '@mui/material';
@@ -9,18 +15,55 @@ import Header from './Header';
 import AvatarComponent from './Avatar';
 import Spinner from './Spinner';
 
-// Hooks
-import { useMoviesFetch } from '../hooks/useMoviesFetch';
+// API
+import API from '../API';
 
 // Image
 import MovieImg from '../images/movie.png';
+
+// Types
+import { MovieT } from '../types/StarWars';
 
 const Wrapper = styled.div`
     padding: 10px;
 `;
 
-const People: React.FC = () => {
-    const { state, loading, error, setLoadingMore } = useMoviesFetch();
+const Movies: React.FC = () => {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false);
+    const [isLoadingMore, setLoadingMore] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
+
+    const MoviesState = useSelector((state: RootState) => state.movies.value);
+
+    const handleFetchMovies = useCallback(async (page: number) => {
+        try {
+            setLoading(true);
+            setError(false);
+
+            const sw_movies = await API.fetchMovies(page);
+            dispatch(fetchMovies({ ...sw_movies, page }));
+        }
+        catch(error) {
+            setError(true);
+        }
+
+        setLoading(false);
+    }, [dispatch]);
+
+    useEffect(() => {
+        handleFetchMovies(1);
+    }, [handleFetchMovies]);
+
+    useEffect(() => {
+        if (!isLoadingMore) {
+            return;
+        }
+
+        handleFetchMovies(MoviesState.page + 1);
+        setLoadingMore(false);
+    }, [isLoadingMore, MoviesState, handleFetchMovies] );
 
     if ( error ) {
         return (
@@ -32,7 +75,7 @@ const People: React.FC = () => {
         <>
             <Header title="Movies" />
             <Wrapper>
-                {state.results.map(movie => {
+                {MoviesState.results.map((movie: MovieT) => {
                     const url = movie.url.split('/');
                     const id = url[url.length - 2];
                     
@@ -45,7 +88,7 @@ const People: React.FC = () => {
                     );
                 })}
                 {loading && <Spinner />}
-                {state.next && !loading && (
+                {MoviesState.next && !loading && (
                     <Button onClick={() => setLoadingMore(true)}>Load More</Button>
                 )}
             </Wrapper>
@@ -53,4 +96,4 @@ const People: React.FC = () => {
     );
 };
 
-export default People;
+export default Movies;

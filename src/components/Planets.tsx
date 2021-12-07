@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { RootState } from '../store/Store';
+
+// Reducers
+import { fetchPlanets } from '../reducers/Planets';
 
 // MUI
 import { Button } from '@mui/material';
@@ -9,18 +15,55 @@ import Header from './Header';
 import AvatarComponent from './Avatar';
 import Spinner from './Spinner';
 
-// Hooks
-import { usePlanetsFetch } from '../hooks/usePlanetsFetch';
+// API
+import API from '../API';
 
 // Image
 import PlanetImg from '../images/planet.png';
+
+// Types
+import { PlanetT } from '../types/StarWars';
 
 const Wrapper = styled.div`
     padding: 10px;
 `;
 
 const Planets: React.FC = () => {
-    const { state, loading, error, setLoadingMore } = usePlanetsFetch();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false);
+    const [isLoadingMore, setLoadingMore] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
+
+    const PlanetsState = useSelector((state: RootState) => state.planets.value);
+
+    const handleFetchPlanets = useCallback(async (page: number) => {
+        try {
+            setLoading(true);
+            setError(false);
+
+            const sw_planets = await API.fetchPlanets(page);
+            dispatch(fetchPlanets({ ...sw_planets, page }));
+        }
+        catch(error) {
+            setError(true);
+        }
+
+        setLoading(false);
+    }, [dispatch]);
+
+    useEffect(() => {
+        handleFetchPlanets(1);
+    }, [handleFetchPlanets]);
+
+    useEffect(() => {
+        if (!isLoadingMore) {
+            return;
+        }
+
+        handleFetchPlanets(PlanetsState.page + 1);
+        setLoadingMore(false);
+    }, [isLoadingMore, PlanetsState, handleFetchPlanets] );
 
     if ( error ) {
         return (
@@ -32,7 +75,7 @@ const Planets: React.FC = () => {
         <>
             <Header title="Planets" />
             <Wrapper>
-                {state.results.map(planet => {
+                {PlanetsState.results.map((planet: PlanetT) => {
                     const url = planet.url.split('/');
                     const id = url[url.length - 2];
                     
@@ -45,7 +88,7 @@ const Planets: React.FC = () => {
                     );
                 })}
                 {loading && <Spinner />}
-                {state.next && !loading && (
+                {PlanetsState.next && !loading && (
                     <Button onClick={() => setLoadingMore(true)}>Load More</Button>
                 )}
             </Wrapper>

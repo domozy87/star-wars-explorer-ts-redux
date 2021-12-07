@@ -1,5 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+
+// Store
+import { RootState } from '../../store/Store';
+
+// Reducers
+import { fetchPerson } from '../../reducers/Person';
 
 // MUI
 import { Typography } from '@mui/material';
@@ -10,7 +17,9 @@ import Header from '../Header';
 
 // Hooks
 import { useParams } from 'react-router-dom';
-import { usePersonFetch } from '../../hooks/usePersonFetch';
+
+// API
+import API from '../../API';
 
 const Wrapper = styled.div`
     display: flex;
@@ -45,7 +54,32 @@ const DashLine = styled.div`
 
 const PersonDetail: React.FC = () => {
     const { personId } = useParams();
-    const { state: person, loading, error } = usePersonFetch(Number(personId));
+
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
+
+    const PersonState = useSelector((state: RootState) => state.person.value);
+
+    const handleFetchPerson = useCallback(async (pid: number) => {
+        try {
+            setLoading(true);
+            setError(false);
+
+            const sw_person = await API.fetchPerson(pid);
+            dispatch(fetchPerson({ ...sw_person }));
+        }
+        catch(error) {
+            setError(true);
+        }
+
+        setLoading(false);
+    }, [dispatch]);
+
+    useEffect(() => {
+        handleFetchPerson(Number(personId));
+    }, [handleFetchPerson, personId]);
 
     if ( loading ) {
         return <Spinner />
@@ -59,40 +93,40 @@ const PersonDetail: React.FC = () => {
         <>
             <Header title="People" />
             <Wrapper>
-                <Typography variant="h4" component="div" gutterBottom>{person.name}</Typography>
+                <Typography variant="h4" component="div" gutterBottom>{PersonState.name}</Typography>
                 <FieldWrap>
                     <StyleLabel>Height</StyleLabel>
-                    <StyleValue>{person.height}</StyleValue>
+                    <StyleValue>{PersonState.height}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Mass</StyleLabel>
-                    <StyleValue>{person.mass}</StyleValue>
+                    <StyleValue>{PersonState.mass}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Hair Color</StyleLabel>
-                    <StyleValue>{person.hair_color}</StyleValue>
+                    <StyleValue>{PersonState.hair_color}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Eye Color</StyleLabel>
-                    <StyleValue>{person.eye_color}</StyleValue>
+                    <StyleValue>{PersonState.eye_color}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Skin Color</StyleLabel>
-                    <StyleValue>{person.skin_color}</StyleValue>
+                    <StyleValue>{PersonState.skin_color}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Birth Year</StyleLabel>
-                    <StyleValue>{person.birth_year}</StyleValue>
+                    <StyleValue>{PersonState.birth_year}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Gender</StyleLabel>
-                    <StyleValue>{person.gender}</StyleValue>
+                    <StyleValue>{PersonState.gender}</StyleValue>
                     <DashLine />
                 </FieldWrap>
             </Wrapper>

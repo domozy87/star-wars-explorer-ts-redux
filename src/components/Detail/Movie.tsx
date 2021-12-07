@@ -1,5 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+
+// Store
+import { RootState } from '../../store/Store';
+
+// Reducers
+import { fetchMovie } from '../../reducers/Movie';
 
 // MUI
 import { Typography } from '@mui/material';
@@ -10,7 +17,9 @@ import Header from '../Header';
 
 // Hooks
 import { useParams } from 'react-router-dom';
-import { useMovieFetch } from '../../hooks/useMovieFetch';
+
+// API
+import API from '../../API';
 
 const Wrapper = styled.div`
     display: flex;
@@ -45,7 +54,31 @@ const DashLine = styled.div`
 
 const MovieDetail: React.FC = () => {
     const { movieId } = useParams();
-    const { state: movie, loading, error } = useMovieFetch(Number(movieId));
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
+
+    const MovieState = useSelector((state: RootState) => state.movie.value);
+
+    const handleFetchMovie = useCallback(async (mid: number) => {
+        try {
+            setLoading(true);
+            setError(false);
+
+            const sw_movie = await API.fetchMovie(mid);
+            dispatch(fetchMovie({ ...sw_movie }));
+        }
+        catch(error) {
+            setError(true);
+        }
+
+        setLoading(false);
+    }, [dispatch]);
+
+    useEffect(() => {
+        handleFetchMovie(Number(movieId));
+    }, [handleFetchMovie, movieId]);
 
     if ( loading ) {
         return <Spinner />
@@ -59,20 +92,20 @@ const MovieDetail: React.FC = () => {
         <>
             <Header title="Movies" />
             <Wrapper>
-                <Typography variant="h4" component="div" gutterBottom>{movie.title}</Typography>
+                <Typography variant="h4" component="div" gutterBottom>{MovieState.title}</Typography>
                 <FieldWrap>
                     <StyleLabel>Directors</StyleLabel>
-                    <StyleValue>{movie.director}</StyleValue>
+                    <StyleValue>{MovieState.director}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Producers</StyleLabel>
-                    <StyleValue>{movie.producer}</StyleValue>
+                    <StyleValue>{MovieState.producer}</StyleValue>
                     <DashLine />
                 </FieldWrap>
                 <FieldWrap>
                     <StyleLabel>Release Date</StyleLabel>
-                    <StyleValue>{movie.release_date}</StyleValue>
+                    <StyleValue>{MovieState.release_date}</StyleValue>
                     <DashLine />
                 </FieldWrap>
             </Wrapper>

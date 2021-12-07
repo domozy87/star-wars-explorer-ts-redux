@@ -1,23 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Types
-import { PersonT, PeopleT } from '../types/StarWars';
+import { PlanetT, PlanetsT } from '../types/StarWars';
 
-const initialState: PeopleT = {
+const initialState: PlanetsT = {
     page: 0,
-    results: [] as PersonT[],
+    results: [] as PlanetT[],
     next: '1',
     total_pages: 0,
     count: 0,
 };
 
-const peopleSlice = createSlice({
-    name: 'people',
+const planetsSlice = createSlice({
+    name: 'planets',
     initialState: {
         value: initialState
     },
     reducers: {
-        fetchPeople: (state, action: PayloadAction<PeopleT>) => {
+        fetchPlanets: (state, action: PayloadAction<PlanetsT>) => {
             state.value = {
                 ...action.payload,
                 page: action.payload.page,
@@ -27,6 +27,6 @@ const peopleSlice = createSlice({
     }
 });
 
-export const { fetchPeople } = peopleSlice.actions;
+export const { fetchPlanets } = planetsSlice.actions;
 
-export default peopleSlice.reducer;
+export default planetsSlice.reducer;

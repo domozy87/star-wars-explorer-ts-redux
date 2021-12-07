@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/Store';
 
 // Reducers
-import { addPeople } from '../reducers/People';
+import { fetchPeople } from '../reducers/People';
 
 // MUI
 import { Button } from '@mui/material';
@@ -22,6 +22,9 @@ import API from '../API';
 // Image
 import PersonImg from '../images/profile.png';
 
+// Types
+import { PersonT } from '../types/StarWars';
+
 const Wrapper = styled.div`
     padding: 10px;
 `;
@@ -35,13 +38,13 @@ const People: React.FC = () => {
 
     const PeopleState = useSelector((state: RootState) => state.people.value);
 
-    const handleAddPeople = useCallback(async (page: number) => {
+    const handleFetchPeople = useCallback(async (page: number) => {
         try {
             setLoading(true);
             setError(false);
 
             const sw_people = await API.fetchPeople(page);
-            dispatch(addPeople({ ...sw_people, page }));
+            dispatch(fetchPeople({ ...sw_people, page }));
         }
         catch(error) {
             setError(true);
@@ -51,17 +54,17 @@ const People: React.FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        handleAddPeople(1);
-    }, [handleAddPeople]);
+        handleFetchPeople(1);
+    }, [handleFetchPeople]);
 
     useEffect(() => {
         if (!isLoadingMore) {
             return;
         }
 
-        handleAddPeople(PeopleState.page + 1);
+        handleFetchPeople(PeopleState.page + 1);
         setLoadingMore(false);
-    }, [isLoadingMore, PeopleState, handleAddPeople] );
+    }, [isLoadingMore, PeopleState, handleFetchPeople] );
 
     if ( error ) {
         return (
@@ -73,7 +76,7 @@ const People: React.FC = () => {
         <>
             <Header title="People" />
             <Wrapper>
-                {PeopleState.results.map(person => {
+                {PeopleState.results.map((person: PersonT) => {
                     const url = person.url.split('/');
                     const id = url[url.length - 2];
                     
