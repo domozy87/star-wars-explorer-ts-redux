@@ -2,6 +2,14 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Installation
+
+```
+$ git clone https://github.com/domozy87/star-wars-explorer-ts-redux.git
+$ cd star-wars-explorer-ts-redux
+$ yarn
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
